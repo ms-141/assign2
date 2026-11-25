@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Corner Store | COMP 3612 Assignment 2</title>
+    <meta
+      name="description"
+      content="Single-page storefront built with HTML, CSS and vanilla JavaScript for COMP 3612 Assignment 2."
+    />
+    <link rel="icon" href="images/logo.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <script type="module" src="js/app.js"></script>
+  </head>
+  <body>
+    <!-- ===================== HEADER (same on every view) ===================== -->
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="#" class="logo" data-view="home">
+          <img src="images/logo.svg" alt="" width="36" height="36" />
+          <span>Corner Store</span>
+        </a>
+        <nav id="main-nav" class="main-nav" aria-label="Main navigation">
+          <a href="#" data-view="home">Home</a>
+          <a href="#" data-view="browse">Browse</a>
+          <a href="#" data-view="category">Category</a>
+          <a href="#" id="about-link">About</a>
+          <a href="#" data-view="cart" class="cart-link">
+            Cart
+            <span id="cart-count" class="badge" aria-label="items in cart"
+              >0</span
+            >
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Status messages shown while the product data loads -->
+    <div id="loading" class="status-message" hidden>Loading products…</div>
+    <div id="load-error" class="status-message error" role="alert" hidden></div>
+
+    <main id="main">
+      <!-- ===================== HOME VIEW ===================== -->
+      <article id="home" class="view">
+        <section class="hero">
+          <div class="hero-content">
+            <p class="eyebrow">New season, new finds</p>
+            <h1>Everything you need, all in one place</h1>
+            <p>
+              From beauty and fragrances to furniture, groceries and tech:
+              browse 100 hand-picked products.
+            </p>
+            <a href="#" class="btn btn-primary btn-lg" data-view="browse"
+              >Shop all products</a
+            >
+          </div>
+        </section>
+
+        <section class="perks" aria-label="Store benefits">
+          <div class="perk">
+            <strong>Free shipping</strong><span>on orders over $500</span>
+          </div>
+          <div class="perk">
+            <strong>Ships worldwide</strong
+            ><span>Canada, USA &amp; international</span>
+          </div>
+          <div class="perk">
+            <strong>Easy returns</strong><span>on most products</span>
+          </div>
+        </section>
+
+        <section class="home-section">
+          <div class="section-heading">
+            <h2>Featured products</h2>
+            <a href="#" data-view="browse">View all →</a>
+          </div>
+          <div id="featured" class="product-grid grid-featured">
+            <!-- JS: featured product cards -->
+          </div>
+        </section>
+      </article>
+
+      <!-- ===================== CATEGORY VIEW ===================== -->
+      <article id="category" class="view" hidden>
+        <section class="hero hero-small">
+          <div class="hero-content">
+            <h1>Shop by category</h1>
+            <p>Pick a department to see everything in it.</p>
+          </div>
+        </section>
+        <ul id="category-list" class="category-grid">
+          <!-- JS: one <li> with an <a class="category-tile" data-category="…"> per category (built from a Set) -->
+        </ul>
+      </article>
+
+      <!-- ===================== BROWSE VIEW ===================== -->
+      <article id="browse" class="view" hidden>
+        <header class="view-header">
+          <h1>Browse</h1>
+        </header>
+
+        <div class="browse-layout">
+          <!-- Filters (left column) -->
+          <aside id="filter" class="filter-panel" aria-label="Product filters">
+            <h2>Departments</h2>
+
+            <details open>
+              <summary>Name</summary>
+              <div class="filter-body">
+                <label for="filter-name" class="visually-hidden"
+                  >Product name</label
+                >
+                <input
+                  type="search"
+                  id="filter-name"
+                  placeholder="Search by name"
+                  autocomplete="off"
+                />
+              </div>
+            </details>
+
+            <details open>
+              <summary>Category</summary>
+              <div id="filter-category" class="filter-body">
+                <!-- JS: one checkbox <label> per category -->
+              </div>
+            </details>
+
+            <details open>
+              <summary>Rating</summary>
+              <fieldset id="filter-rating" class="filter-body">
+                <legend class="visually-hidden">Minimum rating</legend>
+                <label
+                  ><input type="radio" name="rating" value="0" checked /> Any
+                  rating</label
+                >
+                <label
+                  ><input type="radio" name="rating" value="4" />
+                  <span class="stars">★★★★☆</span> &amp; up</label
+                >
+                <label
+                  ><input type="radio" name="rating" value="3" />
+                  <span class="stars">★★★☆☆</span> &amp; up</label
+                >
+                <label
+                  ><input type="radio" name="rating" value="2" />
+                  <span class="stars">★★☆☆☆</span> &amp; up</label
+                >
+                <label
+                  ><input type="radio" name="rating" value="1" />
+                  <span class="stars">★☆☆☆☆</span> &amp; up</label
+                >
+              </fieldset>
+            </details>
+
+            <details open>
+              <summary>Price</summary>
+              <div class="filter-body price-inputs">
+                <label for="price-under">Under $</label>
+                <input
+                  type="number"
+                  id="price-under"
+                  min="0"
+                  step="1"
+                  placeholder="any"
+                />
+                <label for="price-over">Over $</label>
+                <input
+                  type="number"
+                  id="price-over"
+                  min="0"
+                  step="1"
+                  placeholder="any"
+                />
+              </div>
+            </details>
+          </aside>
+
+          <!-- Results (right column) -->
+          <section id="results" aria-label="Results">
+            <div class="results-bar">
+              <p id="result-count" class="result-count" aria-live="polite">
+                0 results
+              </p>
+              <div
+                id="current-filters"
+                class="filter-tags"
+                aria-label="Current filters"
+              >
+                <!-- JS: one <button class="filter-tag"> per active filter -->
+              </div>
+              <button type="button" id="clear-all" class="btn btn-link-danger">
+                ✕ Clear all
+              </button>
+              <label for="sort" class="sort-label">Sort</label>
+              <select id="sort">
+                <option value="name">Product name (A–Z)</option>
+                <option value="price">Price (low to high)</option>
+                <option value="category">Category</option>
+              </select>
+            </div>
+
+            <p id="no-results" class="empty-message" hidden>
+              No products match these filters. Try removing one, or clear them
+              all.
+            </p>
+            <div id="result-grid" class="product-grid">
+              <!-- JS: product cards -->
+            </div>
+          </section>
+        </div>
+      </article>
+
+      <!-- ===================== SINGLE PRODUCT VIEW ===================== -->
+      <article id="singleproduct" class="view" hidden>
+        <nav id="breadcrumb" class="breadcrumb" aria-label="Breadcrumb">
+          <!-- JS: Home › Category › Product title -->
+        </nav>
+
+        <div class="product-layout">
+          <div class="product-gallery">
+            <img id="product-image" src="" alt="" title="Click to enlarge" />
+            <p class="hint">Click the image to enlarge</p>
+          </div>
+
+          <div class="product-info">
+            <p id="product-brand" class="product-brand"></p>
+            <h1 id="product-title"></h1>
+            <p class="product-meta">
+              <span id="product-sku" class="sku"></span>
+              <span id="product-rating" class="stars"></span>
+            </p>
+            <p id="product-price" class="price-lg"></p>
+            <div id="product-tags" class="pills">
+              <!-- JS: <span class="pill"> per tag -->
+            </div>
+            <p id="product-stock" class="stock"></p>
+            <p id="product-description" class="description"></p>
+
+            <div class="buy-box">
+              <label for="product-quantity">Quantity</label>
+              <input type="number" id="product-quantity" value="1" min="1" />
+              <button
+                type="button"
+                id="add-to-cart"
+                class="btn btn-primary btn-lg"
+              >
+                + Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <section class="product-tabs">
+          <div class="tabs" role="tablist" aria-label="Product information">
+            <button
+              type="button"
+              class="tab active"
+              data-tab="specs"
+              role="tab"
+            >
+              Specifications
+            </button>
+            <button type="button" class="tab" data-tab="reviews" role="tab">
+              Reviews
+            </button>
+          </div>
+          <div id="tab-specs" class="tab-panel" role="tabpanel">
+            <dl id="product-specs" class="spec-list">
+              <!-- JS: <dt>/<dd> pairs -->
+            </dl>
+          </div>
+          <div id="tab-reviews" class="tab-panel" role="tabpanel" hidden>
+            <ul id="product-reviews" class="reviews-list">
+              <!-- JS: <li class="review"> per review -->
+            </ul>
+          </div>
+        </section>
+
+        <section class="related">
+          <h2>Related products</h2>
+          <div id="related" class="product-grid">
+            <!-- JS: product cards -->
+          </div>
+        </section>
+      </article>
+
+      <!-- ===================== SHOPPING CART VIEW ===================== -->
+      <article id="cart" class="view" hidden>
+        <header class="view-header">
+          <h1>Shopping cart</h1>
+        </header>
+
+        <div class="cart-layout">
+          <section class="cart-items" aria-label="Items in cart">
+            <p id="cart-empty" class="empty-message" hidden>
+              Your cart is empty.
+              <a href="#" data-view="browse">Start shopping →</a>
+            </p>
+            <table id="cart-table">
+              <thead>
+                <tr>
+                  <th scope="col">Item</th>
+                  <th scope="col" class="num">Price</th>
+                  <th scope="col" class="num">Quantity</th>
+                  <th scope="col" class="num">Subtotal</th>
+                  <th scope="col">
+                    <span class="visually-hidden">Remove</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="cart-rows">
+                <!-- JS: one <tr> per cart line -->
+              </tbody>
+            </table>
+          </section>
+
+          <aside class="cart-summary" aria-label="Order summary">
+            <h2>Order summary</h2>
+
+            <label for="ship-type">Shipping</label>
+            <select id="ship-type">
+              <option value="standard">Standard</option>
+              <option value="express">Express</option>
+              <option value="priority">Priority</option>
+            </select>
+
+            <label for="ship-dest">Destination</label>
+            <select id="ship-dest">
+              <option value="canada">Canada</option>
+              <option value="us">United States</option>
+              <option value="intl">International</option>
+            </select>
+
+            <dl class="summary-list">
+              <div>
+                <dt>Merchandise</dt>
+                <dd id="sum-merch">$0.00</dd>
+              </div>
+              <div>
+                <dt>Shipping</dt>
+                <dd id="sum-ship">$0.00</dd>
+              </div>
+              <div>
+                <dt>Tax</dt>
+                <dd id="sum-tax">$0.00</dd>
+              </div>
+              <div class="summary-total">
+                <dt>Total</dt>
+                <dd id="sum-total">$0.00</dd>
+              </div>
+            </dl>
+            <p class="note">
+              Free shipping on orders over $500. 5% tax applies to Canadian
+              orders.
+            </p>
+            <button
+              type="button"
+              id="checkout"
+              class="btn btn-primary btn-block"
+            >
+              Checkout
+            </button>
+          </aside>
+        </div>
+      </article>
+    </main>
+
+    <!-- ===================== FOOTER (same on every view) ===================== -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div>
+          <p class="footer-brand">Corner Store</p>
+          <p>COMP 3612 Assignment 2 · Mount Royal University · Fall 2026</p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer navigation">
+          <a href="#" data-view="home">Home</a>
+          <a href="#" data-view="browse">Browse</a>
+          <a href="#" data-view="category">Category</a>
+          <a href="#" data-view="cart">Cart</a>
+        </nav>
+        <a
+          class="github-link"
+          href="https://github.com/ms-141/assign2"
+          target="_blank"
+          rel="noopener"
+          >View source on GitHub</a
+        >
+      </div>
+    </footer>
+
+    <!-- ===================== ABOUT DIALOG ===================== -->
+    <dialog id="about" aria-labelledby="about-title">
+      <form method="dialog" class="dialog-inner">
+        <button class="dialog-x" aria-label="Close">×</button>
+        <h2 id="about-title">About this project</h2>
+        <p>
+          Corner Store is a single-page storefront built for COMP 3612 (Web
+          Development) at Mount Royal University. Every view (home, categories,
+          browsing with filters, product details and the cart) lives in one HTML
+          page and is swapped in with JavaScript.
+        </p>
+
+        <h3>Technologies</h3>
+        <ul class="tech-list">
+          <li>HTML5 &amp; CSS3 (grid, flexbox, custom properties)</li>
+          <li>Vanilla JavaScript (ES modules), no libraries</li>
+          <li>Fetch API + DummyJSON product API</li>
+          <li>localStorage for the product cache and the cart</li>
+          <li>Hosted on GitHub Pages</li>
+        </ul>
+
+        <h3>Team</h3>
+        <p>Illia Slesarenko · Partner Name</p>
+
+        <p>
+          <a
+            class="github-link"
+            href="https://github.com/ms-141/assign2"
+            target="_blank"
+            rel="noopener"
+            >GitHub repository</a
+          >
+        </p>
+
+        <div class="dialog-actions">
+          <button class="btn">Close</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- ===================== FULL-SIZE IMAGE DIALOG ===================== -->
+    <dialog id="image-dialog" aria-label="Full-size product image">
+      <form method="dialog" class="dialog-inner">
+        <button class="dialog-x" aria-label="Close">×</button>
+        <img id="image-dialog-img" src="" alt="" />
+      </form>
+    </dialog>
+
+    <!-- ===================== TOAST ===================== -->
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  </body>
+</html>
