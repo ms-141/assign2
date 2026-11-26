@@ -14,6 +14,10 @@
  */
 
 
+//data import
+import { getProducts } from "./data.js";
+const products = await getProducts();
+
 // HELPER FUNCTIONS
 const $ = (e) => {
     return document.querySelector(e);
@@ -44,3 +48,10 @@ document.addEventListener("click", (e) => {
     e.preventDefault();
     showView(link.dataset.view);
 })
+
+// BROWSE -----------------
+
+//test to see if i can load how many products there are
+const result = $("#result-count");
+result.textContent = products.length;
+console.log(products.length);
