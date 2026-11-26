@@ -92,10 +92,12 @@ fieldset {
   padding: 0;
   border: 0;
 }
-
+/* used to toggle between views of different sections on the home page */
 [hidden] {
   display: none !important;
 }
+
+
 
 .visually-hidden {
   position: absolute !important;

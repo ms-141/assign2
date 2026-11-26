@@ -12,3 +12,35 @@
  *   shipping.js  - shipping/tax calculation
  *   views/*.js   - one render function per view
  */
+
+
+// HELPER FUNCTIONS
+const $ = (e) => {
+    return document.querySelector(e);
+};
+
+
+// VIEWS ------------------------
+
+// showing different views function
+const views = document.querySelectorAll(".view");
+//iterable
+
+function showView(view) {
+    const chosenView = $(`#${view}`); //shortcut function $
+    
+    for (const view of views) {
+        //if its not the chosen view, add the hidden attribute to view class
+        view.hidden = view !== chosenView;
+    }
+}
+
+document.addEventListener("click", (e) => {
+    const link  = e.target.closest("[data-view]");
+
+    if(!link) {
+        return;
+    }
+    e.preventDefault();
+    showView(link.dataset.view);
+})
