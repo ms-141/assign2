@@ -59,8 +59,18 @@ console.log(products.length);
 const grid = $("#result-grid")
 products.forEach(prodSquareCr8er)
 function prodSquareCr8er(product){
+    //create div to add everything to
+    const div = document.createElement("div");
+    //create and add the image
     const img = document.createElement("img");
     img.src = product.thumbnail
     img.alt = product.title
-    grid.appendChild(img)
+    div.appendChild(img)
+
+    //add the title
+    const title = document.createElement("h3");
+    title.textContent = product.title;
+    div.appendChild(title);
+
+    grid.appendChild(div);
 }
