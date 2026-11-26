@@ -55,3 +55,12 @@ document.addEventListener("click", (e) => {
 const result = $("#result-count");
 result.textContent = products.length;
 console.log(products.length);
+
+const grid = $("#result-grid")
+products.forEach(prodSquareCr8er)
+function prodSquareCr8er(product){
+    const img = document.createElement("img");
+    img.src = product.thumbnail
+    img.alt = product.title
+    grid.appendChild(img)
+}
