@@ -72,5 +72,10 @@ function prodSquareCr8er(product){
     title.textContent = product.title;
     div.appendChild(title);
 
+    //getting the price
+    const price = document.createElement("h3");
+    price.textContent = "CAD$"+product.price;
+    div.appendChild(price);
+
     grid.appendChild(div);
 }
