@@ -17,11 +17,13 @@
 //data import
 import { getProducts } from "./data.js";
 const products = await getProducts();
+const productsCopy = [...products];
 
 // HELPER FUNCTIONS
 const $ = (e) => {
     return document.querySelector(e);
 };
+
 
 
 // VIEWS ------------------------
@@ -53,16 +55,17 @@ document.addEventListener("click", (e) => {
 
 //test to see if i can load how many products there are
 const result = $("#result-count");
-result.textContent = products.length;
-console.log(products.length);
+// result.textContent = products.length;
 
 const grid = $("#result-grid")
-products.forEach(prodSquareCr8er)
+
 function prodSquareCr8er(product){
     //create div to add everything to
     const div = document.createElement("div");
+    div.classList.add("product-card")
     //create and add the image
     const img = document.createElement("img");
+    img.classList.add("product-card-image");
     img.src = product.thumbnail
     img.alt = product.title
     div.appendChild(img)
@@ -79,3 +82,35 @@ function prodSquareCr8er(product){
 
     grid.appendChild(div);
 }
+
+function renderProducts(array){
+    //reset the grid every render
+    grid.replaceChildren();
+    array.forEach(prodSquareCr8er); //creates and appends elements
+    result.textContent = array.length;    
+}
+
+productsCopy.sort((a,b) => a.title.localeCompare(b.title));
+//get the default sort then render them
+renderProducts(productsCopy);
+
+//get the value of sort
+const sort = $("#sort");
+sort.addEventListener("change", e => {
+    const val = e.target.value;
+    console.log(val);
+    //val check has to be string
+    if (val === 'price') {
+        productsCopy.sort((a, b) => a.price - b.price);
+        renderProducts(productsCopy);
+    }
+    if ( val === 'category') {
+        productsCopy.sort((a, b) => a.category.localeCompare(b.category));
+        renderProducts(productsCopy);
+    }
+    if (val === 'name') {
+        productsCopy.sort((a,b) => a.title.localeCompare(b.title));
+        //get the default sort then render them
+        renderProducts(productsCopy);
+    }   
+})
