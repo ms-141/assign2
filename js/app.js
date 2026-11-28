@@ -17,6 +17,7 @@
 //data import
 import { getProducts } from "./data.js";
 const products = await getProducts();
+//make a copy of the date to manipulate without losing the original
 const productsCopy = [...products];
 
 // HELPER FUNCTIONS
@@ -55,7 +56,7 @@ document.addEventListener("click", (e) => {
 
 //test to see if i can load how many products there are
 const result = $("#result-count");
-// result.textContent = products.length;
+result.textContent = products.length;
 
 const grid = $("#result-grid")
 
@@ -69,6 +70,11 @@ function prodSquareCr8er(product){
     img.src = product.thumbnail
     img.alt = product.title
     div.appendChild(img)
+    
+    //add the category
+    const prodCategory  = document.createElement("span");
+    prodCategory.textContent = product.category;
+    div.appendChild(prodCategory);
 
     //add the title
     const title = document.createElement("h3");
@@ -80,6 +86,12 @@ function prodSquareCr8er(product){
     price.textContent = "CAD$"+product.price;
     div.appendChild(price);
 
+
+    //add rating
+    const prodRating = document.createElement("p");
+    prodRating.textContent = product.rating + "/5 ★";
+    div.appendChild(prodRating);
+
     grid.appendChild(div);
 }
 
@@ -87,9 +99,10 @@ function renderProducts(array){
     //reset the grid every render
     grid.replaceChildren();
     array.forEach(prodSquareCr8er); //creates and appends elements
-    result.textContent = array.length;    
+    result.textContent = array.length + " products found";    
 }
 
+//default sort of productsCopy
 productsCopy.sort((a,b) => a.title.localeCompare(b.title));
 //get the default sort then render them
 renderProducts(productsCopy);
@@ -97,22 +110,8 @@ renderProducts(productsCopy);
 //get the value of sort
 const sort = $("#sort");
 sort.addEventListener("change", e => {
-    const val = e.target.value;
-    console.log(val);
-    //val check has to be string
-    if (val === 'price') {
-        productsCopy.sort((a, b) => a.price - b.price);
-        renderProducts(productsCopy);
-    }
-    if ( val === 'category') {
-        productsCopy.sort((a, b) => a.category.localeCompare(b.category));
-        renderProducts(productsCopy);
-    }
-    if (val === 'name') {
-        productsCopy.sort((a,b) => a.title.localeCompare(b.title));
-        //get the default sort then render them
-        renderProducts(productsCopy);
-    }   
+    //just call updateBrowse for this and all relevent eventlistenrs
+    updateBrowse();
 })
 
 //filter for name
@@ -121,12 +120,46 @@ nameFilter.addEventListener("input", e => {
     updateBrowse()    
 })
 
+//rating filter variable
+let rating = $("#filter-rating");
+//blnk arrow function
+rating.addEventListener("change", () => updateBrowse());
+
+//filter for price
+const lowPrice = $("#price-over");
+lowPrice.addEventListener("input", () => updateBrowse());
+const hiPrice = $("#price-under"); 
+hiPrice.addEventListener("input", () => updateBrowse());
+
 //update filtered results
 function updateBrowse() {
     const name = nameFilter.value.toLowerCase();
+    //check for rating
+    const checkedRadio = $("#filter-rating :checked");
+    const checkedVal = Number(checkedRadio.value);
+    //check for pricing
+    const lPrice = lowPrice.value;
+    const hPrice = hiPrice.value; 
+    //create new filtered our array based on the name and rating  and pricing
     const filtered = productsCopy.filter(product => {
-        return product.title.toLowerCase().includes(name);
+        return product.title.toLowerCase().includes(name) && product.rating >= checkedVal && (lPrice==="" || product.price>Number(lPrice)) && (hPrice==="" || product.price < Number(hPrice));
     });
+
+    //check for sort option
+    const val = sort.value;
+    console.log(val);
+    //val check has to be string
+    if (val === 'price') {
+        filtered.sort((a, b) => a.price - b.price);
+    }
+    if ( val === 'category') {
+        filtered.sort((a, b) => a.category.localeCompare(b.category));
+        //localCompare compares text
+    }
+    if (val === 'name') {
+        filtered.sort((a,b) => a.title.localeCompare(b.title));
+    }   
+
     renderProducts(filtered);
     
 }
