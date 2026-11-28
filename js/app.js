@@ -114,3 +114,19 @@ sort.addEventListener("change", e => {
         renderProducts(productsCopy);
     }   
 })
+
+//filter for name
+const nameFilter = $("#filter-name");
+nameFilter.addEventListener("input", e => {
+    updateBrowse()    
+})
+
+//update filtered results
+function updateBrowse() {
+    const name = nameFilter.value.toLowerCase();
+    const filtered = productsCopy.filter(product => {
+        return product.title.toLowerCase().includes(name);
+    });
+    renderProducts(filtered);
+    
+}
